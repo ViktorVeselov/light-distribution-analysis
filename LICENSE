@@ -1,12 +1,6 @@
-
-### `LICENSE`
-
-Include a `LICENSE` file to specify how others can use, modify, and distribute your package. The MIT License is commonly used for this purpose.
-
-```plaintext
 MIT License
 
-Copyright (c) [Year] [Your Name]
+Copyright (c) 2023 SweatyCrayfish
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
