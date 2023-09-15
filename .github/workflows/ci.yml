@@ -1,6 +1,6 @@
 name: CI
 
-on:
+"on":
   push:
     branches:
       - main
@@ -23,16 +23,17 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
-      - name: Set up virtual environment
-        run: python3 -m venv venv
-
-      - name: Activate virtual environment (Unix)
-        if: runner.os != 'Windows'
-        run: source venv/bin/activate
-
-      - name: Activate virtual environment (Windows)
+      - name: Set up virtual environment (Windows)
         if: runner.os == 'Windows'
-        run: .\venv\Scripts\Activate
+        run: |
+          python -m venv venv
+          .\venv\Scripts\Activate
+
+      - name: Set up virtual environment (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate
 
       - name: Install system dependencies (Ubuntu)
         if: runner.os == 'Linux'
