@@ -9,19 +9,30 @@ on:
       - main
 
 jobs:
-  build:
+  test:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11"]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v3
         with:
           python-version: ${{ matrix.python-version }}
+
+      - name: Set up virtual environment
+        run: python3 -m venv venv
+
+      - name: Activate virtual environment (Unix)
+        if: runner.os != 'Windows'
+        run: source venv/bin/activate
+
+      - name: Activate virtual environment (Windows)
+        if: runner.os == 'Windows'
+        run: .\venv\Scripts\Activate
 
       - name: Install system dependencies (Ubuntu)
         if: runner.os == 'Linux'
@@ -31,8 +42,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python3 -m pip install --upgrade pip --user
-          python3 -m pip install -r requirements.txt flake8 pytest
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt flake8 pytest
 
       - name: Lint with flake8
         run: flake8 . --exclude=venv --count --select=E9,F63,F7,F82 --show-source --statistics
