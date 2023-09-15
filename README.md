@@ -19,7 +19,7 @@ Light-Distribution-Analysis is a Python package designed for the analysis of lig
 To install Light-Distribution-Analysis, run the following command in your terminal:
 
 ```bash
-pip install light-distribution-analysis
+python3 -m pip install light-distribution-analysis
 ```
 
 ## Functions
