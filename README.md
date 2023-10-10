@@ -1,5 +1,7 @@
 # Light-Distribution-Analysis
 
+[![CI](https://github.com/SweatyCrayfish/light-distribution-analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/SweatyCrayfish/light-distribution-analysis/actions/workflows/ci.yml)
+
 ## Overview
 
 Light-Distribution-Analysis is a Python package designed for the analysis of light distribution in images. The package utilizes OpenCV, NumPy, and Matplotlib to enable in-depth yet simple analysis of the flux and power in images based on their wavelength and frequency representations.
@@ -19,7 +21,7 @@ Light-Distribution-Analysis is a Python package designed for the analysis of lig
 To install Light-Distribution-Analysis, run the following command in your terminal:
 
 ```bash
-pip install light-distribution-analysis
+python3 -m pip install light-distribution-analysis
 ```
 
 ## Functions

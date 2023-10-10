@@ -1,8 +1,13 @@
-import unittest
-import numpy as np
 import os
+import unittest
+
 import cv2
-from light_distribution_analysis import validate_image_dimensions, validate_file_type, load_image
+import numpy as np
+from light_distribution_analysis import (
+    load_image,
+    validate_file_type,
+    validate_image_dimensions,
+)
 
 
 class TestImageProcessingFunctions(unittest.TestCase):
