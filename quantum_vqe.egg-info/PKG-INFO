@@ -1,3 +1,12 @@
+Metadata-Version: 2.1
+Name: quantum-vqe
+Version: 0.1.2.1
+Summary: A quantum VQE package
+Home-page: https://github.com/SweatyCrayfish/quantum_vqe
+Author: Viktor Veselov
+Description-Content-Type: text/markdown
+License-File: LICENSE.md
+
 # Quantum VQE Package
 
 The Quantum VQE (Variational Quantum Eigensolver) package is a Python library for simulating the VQE algorithm on quantum computers. It utilizes the Qiskit framework to create and optimize quantum circuits that estimate the ground state energy of a given Hamiltonian.

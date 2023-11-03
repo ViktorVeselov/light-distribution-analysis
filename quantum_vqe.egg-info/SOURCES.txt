@@ -1,0 +1,13 @@
+LICENSE.md
+README.md
+setup.py
+quantum_vqe/__init__.py
+quantum_vqe/utils.py
+quantum_vqe/vqe.py
+quantum_vqe.egg-info/PKG-INFO
+quantum_vqe.egg-info/SOURCES.txt
+quantum_vqe.egg-info/dependency_links.txt
+quantum_vqe.egg-info/requires.txt
+quantum_vqe.egg-info/top_level.txt
+tests/__init__.py
+tests/test_vqe.py
