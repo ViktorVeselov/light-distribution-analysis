@@ -5,7 +5,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/SweatyCrayfish/light-distribution-analysis/blob/main/LICENCE.md)
 [![PyPi](https://img.shields.io/badge/PyPi-Page-blue)](https://pypi.org/project/light-distribution-analysis/)
 [![CI](https://github.com/SweatyCrayfish/light-distribution-analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/SweatyCrayfish/light-distribution-analysis/actions/workflows/ci.yml)
-
+[![Downloads](https://pepy.tech/badge/light-distribution-analysis)](https://pepy.tech/project/light-distribution-analysis)
 ## Overview
 
 Light-Distribution-Analysis is a Python package designed for the analysis of light distribution in images. The package utilizes OpenCV, NumPy, and Matplotlib to enable in-depth yet simple analysis of the flux and power in images based on their wavelength and frequency representations.
