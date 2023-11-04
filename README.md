@@ -1,5 +1,9 @@
 # Light-Distribution-Analysis
 
+### 🛡️ Badges
+[![GitHub Repo stars](https://img.shields.io/github/stars/your-github-username/your-repo-name?style=social)](https://github.com/SweatyCrayfish/light-distribution-analysis/stargazers)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/SweatyCrayfish/light-distribution-analysis/blob/main/LICENCE.md)
+[![PyPi](https://img.shields.io/badge/PyPi-Page-blue)](https://pypi.org/project/light-distribution-analysis/)
 [![CI](https://github.com/SweatyCrayfish/light-distribution-analysis/actions/workflows/ci.yml/badge.svg)](https://github.com/SweatyCrayfish/light-distribution-analysis/actions/workflows/ci.yml)
 
 ## Overview
