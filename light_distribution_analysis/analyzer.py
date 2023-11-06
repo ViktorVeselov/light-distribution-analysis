@@ -1,43 +1,38 @@
-import argparse
 import logging
-import os
-
+import tqdm
 import cv2
 import matplotlib.pyplot as plt
 import numpy as np
-import tqdm
+import os
+from argparse import ArgumentParser
 
 logging.basicConfig(level=logging.INFO)
 
-
 # Function to validate the dimensions of an image
-def validate_image_dimensions(image: np.array) -> bool:
+def validate_image_dimensions(image):
     """Check if an image has the correct dimensions (3-channel color image).
 
     Parameters:
         image (np.array): The image array.
 
     Returns:
-        True if image is valid, False otherwise.
+        bool: True if image is valid, False otherwise.
     """
     if len(image.shape) != 3 or image.shape[2] != 3:
         logging.error("Invalid image dimensions. Expecting a 3-channel color image.")
         return False
     return True
 
-
-def validate_file_type(file_path: str) -> bool:
-    valid_extensions: list[str] = [".jpg", ".jpeg", ".png"]
+def validate_file_type(file_path):
+    valid_extensions = ['.jpg', '.jpeg', '.png']
     if not any(file_path.endswith(ext) for ext in valid_extensions):
-        logging.error(
-            f"Invalid file type. Supported file types are {', '.join(valid_extensions)}"
-        )
+        logging.error(f"Invalid file type. Supported file types are {', '.join(valid_extensions)}")
         return False
     return True
 
 
 # Function to load an image from a file path
-def load_image(image_path: str) -> np.array:
+def load_image(image_path):
     """Load an image from a given path using OpenCV.
 
     Parameters:
@@ -56,9 +51,8 @@ def load_image(image_path: str) -> np.array:
     except Exception as e:
         logging.error(f"An error occurred: {e}")
 
-
 # Function to convert image to RGB
-def convert_to_rgb(image: np.ndarray) -> np.ndarray:
+def convert_to_rgb(image):
     """Convert a BGR image to RGB.
 
     Parameters:
@@ -74,30 +68,29 @@ def convert_to_rgb(image: np.ndarray) -> np.ndarray:
     except Exception as e:
         logging.error(f"Failed to convert image to RGB: {e}")
 
-
-def rgb_to_wavelength(red: int, green: int, blue: int) -> float:
+def rgb_to_wavelength(r, g, b):
     """Convert RGB values to a wavelength in the visible spectrum.
 
     Parameters:
-        red (int): Red channel value (0-255).
-        green (int): Green channel value (0-255).
-        blue (int): Blue channel value (0-255).
+        r (int): Red channel value (0-255).
+        g (int): Green channel value (0-255).
+        b (int): Blue channel value (0-255).
 
     Returns:
         float: Wavelength in nanometers.
     """
-    max_val = max(red, green, blue)
-    min_val = min(red, green, blue)
+    max_val = max(r, g, b)
+    min_val = min(r, g, b)
     hue = 0
 
     if max_val == min_val:
         hue = 0
-    elif max_val == red:
-        hue = (60 * ((green - blue) / (max_val - min_val)) + 360) % 360
-    elif max_val == green:
-        hue = (60 * ((blue - red) / (max_val - min_val)) + 120) % 360
-    elif max_val == blue:
-        hue = (60 * ((red - green) / (max_val - min_val)) + 240) % 360
+    elif max_val == r:
+        hue = (60 * ((g - b) / (max_val - min_val)) + 360) % 360
+    elif max_val == g:
+        hue = (60 * ((b - r) / (max_val - min_val)) + 120) % 360
+    elif max_val == b:
+        hue = (60 * ((r - g) / (max_val - min_val)) + 240) % 360
 
     if 0 <= hue < 60:
         return 620 + (hue / 60) * (740 - 620)
@@ -108,8 +101,7 @@ def rgb_to_wavelength(red: int, green: int, blue: int) -> float:
     else:
         return 620 + ((hue - 300) / 60) * (740 - 620)
 
-
-def wavelength_to_frequency(wavelength: float) -> float:
+def wavelength_to_frequency(wavelength):
     """Convert wavelength to frequency.
 
     Parameters:
@@ -118,11 +110,10 @@ def wavelength_to_frequency(wavelength: float) -> float:
     Returns:
         float: Frequency in Hz.
     """
-    c = 299792458
+    c = 299792458 
     return c / wavelength
 
-
-def save_image(image: np.ndarray, path: str, cmap: str = None) -> None:
+def save_image(image, path, cmap=None):
     """Save an image to a specified file path.
 
     Parameters:
@@ -135,14 +126,13 @@ def save_image(image: np.ndarray, path: str, cmap: str = None) -> None:
     """
     try:
         plt.imshow(image, cmap=cmap)
-        plt.axis("off")
-        plt.savefig(path, bbox_inches="tight", pad_inches=0)
+        plt.axis('off')
+        plt.savefig(path, bbox_inches='tight', pad_inches=0)
         plt.close()
     except Exception as e:
         logging.error(f"Failed to save image: {e}")
 
-
-def apply_edge_detection(image: np.ndarray, method: str = "Canny") -> np.ndarray:
+def apply_edge_detection(image, method='Canny'):
     """Apply edge detection to an image using either the Canny or Sobel algorithm.
 
     Parameters:
@@ -156,9 +146,9 @@ def apply_edge_detection(image: np.ndarray, method: str = "Canny") -> np.ndarray
         Raises ValueError for an unknown method.
     """
     gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    if method == "Canny":
+    if method == 'Canny':
         return cv2.Canny(gray_image, 100, 200)
-    elif method == "Sobel":
+    elif method == 'Sobel':
         sobelx = cv2.Sobel(gray_image, cv2.CV_64F, 1, 0, ksize=5)
         sobely = cv2.Sobel(gray_image, cv2.CV_64F, 0, 1, ksize=5)
         return np.sqrt(sobelx**2 + sobely**2)
@@ -166,9 +156,7 @@ def apply_edge_detection(image: np.ndarray, method: str = "Canny") -> np.ndarray
         raise ValueError(f"Unknown method: {method}")
 
 
-def save_transformed_image(
-    image: np.ndarray, transformation_type: str, final_dir: str, image_path: str
-):
+def save_transformed_image(image, transformation_type, final_dir, image_path):
     """Save a transformed image.
 
     Parameters:
@@ -178,12 +166,9 @@ def save_transformed_image(
         image_path (str): Original image path.
 
     """
-    save_image(
-        image, f"{final_dir}/{transformation_type}_{os.path.basename(image_path)}"
-    )
+    save_image(image, f'{final_dir}/{transformation_type}_{os.path.basename(image_path)}')
 
-
-def process_image_to_rgb(image_path: str, final_dir: str):
+def process_image_to_rgb(image_path, final_dir):
     """Process and save an image in RGB, wavelength, and frequency formats.
 
     Parameters:
@@ -204,28 +189,14 @@ def process_image_to_rgb(image_path: str, final_dir: str):
     if image_rgb is None:
         return
 
-    save_transformed_image(image_rgb, "rgb", final_dir, image_path)
+    save_transformed_image(image_rgb, 'rgb', final_dir, image_path)
     logging.info(f"Processed and saved RGB image to {final_dir}.")
-    wavelength_image = (
-        np.apply_along_axis(
-            lambda x: rgb_to_wavelength(x[0], x[1], x[2]), axis=2, arr=image_rgb
-        )
-        * 1e-9
-    )
+    wavelength_image = np.apply_along_axis(lambda x: rgb_to_wavelength(x[0], x[1], x[2]), axis=2, arr=image_rgb) * 1e-9
     frequency_image = wavelength_to_frequency(wavelength_image)
-    save_image(
-        wavelength_image * 1e9,
-        f"{final_dir}/wavelength_{os.path.basename(image_path)}",
-        cmap="nipy_spectral",
-    )
-    save_image(
-        frequency_image / 1e12,
-        f"{final_dir}/frequency_{os.path.basename(image_path)}",
-        cmap="jet",
-    )
+    save_image(wavelength_image * 1e9, f'{final_dir}/wavelength_{os.path.basename(image_path)}', cmap='nipy_spectral')
+    save_image(frequency_image / 1e12, f'{final_dir}/frequency_{os.path.basename(image_path)}', cmap='jet')
 
-
-def ltd(path_to_image_1: str, path_to_image_2: str, final_dir: str = "final_dir"):
+def ltd(path_to_image_1, path_to_image_2, final_dir='final_dir'):
     """High-level function to process two images.
 
     Parameters:
@@ -238,8 +209,7 @@ def ltd(path_to_image_1: str, path_to_image_2: str, final_dir: str = "final_dir"
     process_single_image(path_to_image_1, final_dir)
     process_single_image(path_to_image_2, final_dir)
 
-
-def process_single_image(image_path: str, final_dir: str):
+def process_single_image(image_path, final_dir):
     """Process and save a single image in RGB, wavelength, and frequency formats.
 
     Parameters:
@@ -257,35 +227,14 @@ def process_single_image(image_path: str, final_dir: str):
     image_rgb = convert_to_rgb(image)
     if image_rgb is None:
         return
-    save_image(image_rgb, f"{final_dir}/rgb_{os.path.basename(image_path)}")
-    wavelength_image = (
-        np.apply_along_axis(
-            lambda x: rgb_to_wavelength(x[0], x[1], x[2]), axis=2, arr=image_rgb
-        )
-        * 1e-9
-    )
-    wavelength_image = np.array(
-        [
-            wavelength
-            for wavelength in tqdm(
-                wavelength_image.flatten(), desc="Calculating Wavelengths", unit="pixel"
-            )
-        ]
-    ).reshape(wavelength_image.shape)
+    save_image(image_rgb, f'{final_dir}/rgb_{os.path.basename(image_path)}')
+    wavelength_image = np.apply_along_axis(lambda x: rgb_to_wavelength(x[0], x[1], x[2]), axis=2, arr=image_rgb) * 1e-9
+    wavelength_image = np.array([wavelength for wavelength in tqdm(wavelength_image.flatten(), desc="Calculating Wavelengths", unit="pixel")]).reshape(wavelength_image.shape)
     frequency_image = wavelength_to_frequency(wavelength_image)
-    save_image(
-        wavelength_image * 1e9,
-        f"{final_dir}/wavelength_{os.path.basename(image_path)}",
-        cmap="nipy_spectral",
-    )
-    save_image(
-        frequency_image / 1e12,
-        f"{final_dir}/frequency_{os.path.basename(image_path)}",
-        cmap="jet",
-    )
+    save_image(wavelength_image * 1e9, f'{final_dir}/wavelength_{os.path.basename(image_path)}', cmap='nipy_spectral')
+    save_image(frequency_image / 1e12, f'{final_dir}/frequency_{os.path.basename(image_path)}', cmap='jet')
 
-
-def calculate_flux(intensity_image: np.array, quantity_image: np.array) -> float:
+def calculate_flux(intensity_image, quantity_image):
     """Calculate the flux of an image.
 
     Parameters:
@@ -298,8 +247,7 @@ def calculate_flux(intensity_image: np.array, quantity_image: np.array) -> float
     flux_image = intensity_image * quantity_image
     return np.sum(flux_image)
 
-
-def calculate_power(intensity_image: np.array) -> float:
+def calculate_power(intensity_image):
     """Calculate the power of an image.
 
     Parameters:
@@ -308,11 +256,10 @@ def calculate_power(intensity_image: np.array) -> float:
     Returns:
         float: Total power.
     """
-    power_image = intensity_image**2
+    power_image = intensity_image ** 2
     return np.sum(power_image)
 
-
-def plot_power_image(intensity_image: np.ndarray, save_path: str) -> None:
+def plot_power_image(intensity_image, save_path):
     """Plot and save the power image.
 
     Parameters:
@@ -320,16 +267,13 @@ def plot_power_image(intensity_image: np.ndarray, save_path: str) -> None:
         save_path (str): Path to save the power image.
 
     """
-    power_image = intensity_image**2
-    plt.imshow(power_image, cmap="hot")
-    plt.axis("off")
-    plt.savefig(save_path, bbox_inches="tight", pad_inches=0)
+    power_image = intensity_image ** 2
+    plt.imshow(power_image, cmap='hot')
+    plt.axis('off')
+    plt.savefig(save_path, bbox_inches='tight', pad_inches=0)
     plt.close()
 
-
-def compare_flux(
-    image_path1: str, image_path2: str, final_dir: str = "comparison_results"
-) -> None:
+def compare_flux(image_path1, image_path2, final_dir='comparison_results'):
     """Compare the flux of two images.
 
     Parameters:
@@ -342,23 +286,14 @@ def compare_flux(
     """
     process_single_image(image_path1, final_dir)
     process_single_image(image_path2, final_dir)
-    intensity_image1 = cv2.imread(
-        f"{final_dir}/frequency_{os.path.basename(image_path1)}.png",
-        cv2.IMREAD_GRAYSCALE,
-    )
-    intensity_image2 = cv2.imread(
-        f"{final_dir}/frequency_{os.path.basename(image_path2)}.png",
-        cv2.IMREAD_GRAYSCALE,
-    )
+    intensity_image1 = cv2.imread(f"{final_dir}/frequency_{os.path.basename(image_path1)}.png", cv2.IMREAD_GRAYSCALE)
+    intensity_image2 = cv2.imread(f"{final_dir}/frequency_{os.path.basename(image_path2)}.png", cv2.IMREAD_GRAYSCALE)
     flux1 = calculate_flux(intensity_image1, intensity_image1)
-    flux2 = calculate_flux(intensity_image2, intensity_image2)
+    flux2 = calculate_flux(intensity_image2, intensity_image2) 
     similarity_score_flux = 1 - abs(flux1 - flux2) / max(flux1, flux2)
     return similarity_score_flux
 
-
-def compare_power(
-    image_path1: str, image_path2: str, final_dir: str = "comparison_results"
-) -> None:
+def compare_power(image_path1, image_path2, final_dir='comparison_results'):
     """Compare the power of two images.
 
     Parameters:
@@ -371,47 +306,32 @@ def compare_power(
     """
     process_single_image(image_path1, final_dir)
     process_single_image(image_path2, final_dir)
-    intensity_image1 = cv2.imread(
-        f"{final_dir}/frequency_{os.path.basename(image_path1)}.png",
-        cv2.IMREAD_GRAYSCALE,
-    )
-    intensity_image2 = cv2.imread(
-        f"{final_dir}/frequency_{os.path.basename(image_path2)}.png",
-        cv2.IMREAD_GRAYSCALE,
-    )
+    intensity_image1 = cv2.imread(f"{final_dir}/frequency_{os.path.basename(image_path1)}.png", cv2.IMREAD_GRAYSCALE)
+    intensity_image2 = cv2.imread(f"{final_dir}/frequency_{os.path.basename(image_path2)}.png", cv2.IMREAD_GRAYSCALE) 
     power1 = calculate_power(intensity_image1)
     power2 = calculate_power(intensity_image2)
-    plot_power_image(
-        intensity_image1, f"{final_dir}/power_{os.path.basename(image_path1)}.png"
-    )
-    plot_power_image(
-        intensity_image2, f"{final_dir}/power_{os.path.basename(image_path2)}.png"
-    )
+    plot_power_image(intensity_image1, f"{final_dir}/power_{os.path.basename(image_path1)}.png")
+    plot_power_image(intensity_image2, f"{final_dir}/power_{os.path.basename(image_path2)}.png")
     similarity_score_power = 1 - abs(power1 - power2) / max(power1, power2)
     return similarity_score_power
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Image Processing Utility")
 
+if __name__ == "__main__":
+    parser = ArgumentParser(description="Image Processing Utility")
+    
     parser.add_argument("--image1", help="Path to the first image")
     parser.add_argument("--image2", help="Path to the second image")
-    parser.add_argument(
-        "--outdir", default="final_dir", help="Output directory for processed images"
-    )
-    parser.add_argument(
-        "--imagedir", help="Directory containing multiple images to process"
-    )
-
+    parser.add_argument("--outdir", default="final_dir", help="Output directory for processed images")
+    parser.add_argument("--imagedir", help="Directory containing multiple images to process")
+    
     args = parser.parse_args()
-
+    
     if not os.path.exists(args.outdir):
         os.makedirs(args.outdir)
 
     if args.imagedir:
-        image_files = [
-            f for f in os.listdir(args.imagedir) if f.endswith(("jpg", "png"))
-        ]
+        image_files = [f for f in os.listdir(args.imagedir) if f.endswith(('jpg', 'png'))]
         for image_file in image_files:
             process_single_image(os.path.join(args.imagedir, image_file), args.outdir)
     elif args.image1 and args.image2:
@@ -421,3 +341,7 @@ if __name__ == "__main__":
         print(f"Power Similarity Score: {similarity_power}")
     else:
         print("Either --imagedir or both --image1 and --image2 must be specified.")
+
+
+
+
